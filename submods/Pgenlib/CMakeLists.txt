@@ -4,6 +4,7 @@ file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB SOURCES_PLINK "${CMAKE_CURRENT_SOURCE_DIR}/../plink-ng/2.0/pgenlib*.cc")
 list(APPEND SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../plink-ng/2.0/plink2_base.cc")
 list(APPEND SOURCES "${SOURCES_PLINK}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../plink-ng/2.0")
+#include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../plink-ng/2.0")
 
 add_library(Pgenlib STATIC ${SOURCES})
+target_include_directories(Pgenlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../plink-ng/2.0)
