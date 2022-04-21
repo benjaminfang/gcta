@@ -211,6 +211,7 @@ set(SRC_FILES ${SRC_FILES_CXX} ${SRC_FILES_CC})
 message(${SRC_FILES})
 
 
+
 #build
 add_executable(gcta ${SRC_FILES})
 add_subdirectory(submods)
@@ -237,7 +238,7 @@ if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
             target_compile_options(gcta PRIVATE "-fopenmp")
             target_include_directories(gcta PRIVATE ${blas_include_dir} PRIVATE ${boost_include_dir} 
                 PRIVATE ${eigen_include_dir} PRIVATE ${spectra_include_dir} PRIVATE ${zlib_include_dir} 
-                PRIVATE ${zstd_include_dir} PRIVATE ${gls_include_dir})
+                PRIVATE ${zstd_include_dir} PRIVATE ${gls_include_dir} PRIVATE ${CMAKE_SOURCE_DIR}) 
             target_link_directories(gcta PRIVATE ${blas_lib_dir} PRIVATE ${zlib_lib_dri} PRIVATE ${zstd_lib_dir} PRIVATE ${gsl_lib_dir})
             target_link_options(gcta PRIVATE "-static-libgcc" PRIVATE "-static-libgcc++")
             target_link_libraries(gcta Pgenlib -Wl,--start-group ${blas_link_item} -Wl,--end-group pthread z zstd gsl gslcblas)
