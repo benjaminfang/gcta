@@ -208,8 +208,7 @@ endif ()
 file(GLOB SRC_FILES_CXX ${PRJ_SOURCE_DIR}/*.cpp)
 file(GLOB SRC_FILES_CC ${PRJ_SOURCE_DIR}/*.c)
 set(SRC_FILES ${SRC_FILES_CXX} ${SRC_FILES_CC})
-message(${SRC_FILES})
-
+message(DEBUG ${SRC_FILES})
 
 
 #build
@@ -240,8 +239,12 @@ if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
                 PRIVATE ${eigen_include_dir} PRIVATE ${spectra_include_dir} PRIVATE ${zlib_include_dir} 
                 PRIVATE ${zstd_include_dir} PRIVATE ${gls_include_dir} PRIVATE ${CMAKE_SOURCE_DIR}) 
             target_link_directories(gcta PRIVATE ${blas_lib_dir} PRIVATE ${zlib_lib_dri} PRIVATE ${zstd_lib_dir} PRIVATE ${gsl_lib_dir})
-            target_link_options(gcta PRIVATE "-static-libgcc" PRIVATE "-static-libgcc++")
-            target_link_libraries(gcta Pgenlib -Wl,--start-group ${blas_link_item} -Wl,--end-group pthread z zstd gsl gslcblas)
+            target_link_options(gcta PRIVATE "-static-libgcc" PRIVATE "-static-libstdc++")
+            if (NOT BUILD_STATIC)
+                target_link_libraries(gcta Pgenlib -Wl,--start-group ${blas_link_item} -Wl,--end-group pthread gomp z zstd sqlite3 gsl gslcblas)
+            else ()
+                target_link_libraries(gcta Pgenlib -static -Wl,--start-group ${blas_link_item} -Wl,--end-group pthread gomp dl z zstd sqlite3 gsl gslcblas)
+            endif ()
         elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         else ()
             message(WARNING "Under UNIX_list system, one GCC and Clang was supported.")
