@@ -13,7 +13,7 @@ set(BUILD_STATIC FALSE CACHE BOOL "")
 
 
 #information of CPU architecture
-message(STATUS "CPU_ARCH: " ${CMAKE_HOST_SYSTEM_PROCESSOR})
+message(STATUS "CMAKE_HOST_SYSTEM_PROCESSOR: " ${CMAKE_HOST_SYSTEM_PROCESSOR})
 message("")
 
 
@@ -189,7 +189,6 @@ else ()
     message(FATAL_ERROR "Can not find zstd header or librayr.")
 endif ()
 
-
 #detect gsl
 set(gsl_path FALSE CACHE PATH "")
 set(gsl_include_path FALSE CACHE PATH "")
@@ -205,7 +204,70 @@ else ()
 endif ()
 
 
-#choose mkl or openblas, if mkl present then use it.
+#get source files
+file(GLOB SRC_FILES_CXX ${PRJ_SOURCE_DIR}/*.cpp)
+file(GLOB SRC_FILES_CC ${PRJ_SOURCE_DIR}/*.c)
+set(SRC_FILES ${SRC_FILES_CXX} ${SRC_FILES_CC})
+message(${SRC_FILES})
+
+
+#build
+add_executable(gcta ${SRC_FILES})
+add_subdirectory(submods)
+
+
+if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    #choose mkl or openblas
+    if (mkl_include_dir AND mkl_lib_dir)
+        set(blas_include_dir ${mkl_include_dir})
+        set(blas_lib_dir ${mkl_lib_dir})
+    else ()
+        set(blas_include_dir ${openblas_include_dir})
+        set(blas_lib_dir ${openblas_include_dir})
+    endif ()
+
+    if (system STREQUAL "UNIX_like")
+        if (mkl_include_dir AND mkl_lib_dir)
+            set(blas_link_item "mkl_core" "mkl_intel_lp64" "mkl_gnu_thread")
+        else ()
+            set(blas_link_item "")
+        endif ()
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            #target_compile_definitions(gcta)
+            target_compile_options(gcta PRIVATE "-fopenmp")
+            target_include_directories(gcta PRIVATE ${blas_include_dir} PRIVATE ${boost_include_dir} 
+                PRIVATE ${eigen_include_dir} PRIVATE ${spectra_include_dir} PRIVATE ${zlib_include_dir} 
+                PRIVATE ${zstd_include_dir} PRIVATE ${gls_include_dir})
+            target_link_directories(gcta PRIVATE ${blas_lib_dir} PRIVATE ${zlib_lib_dri} PRIVATE ${zstd_lib_dir} PRIVATE ${gsl_lib_dir})
+            target_link_options(gcta PRIVATE "-static-libgcc" PRIVATE "-static-libgcc++")
+            target_link_libraries(gcta Pgenlib -Wl,--start-group ${blas_link_item} -Wl,--end-group pthread z zstd gsl gslcblas)
+        elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        else ()
+            message(WARNING "Under UNIX_list system, one GCC and Clang was supported.")
+        endif ()
+    elseif (system STREQUAL "macOS")
+
+    elseif (system STREQUAL "windows")
+
+    else ()
+    endif ()
+elseif (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "aarch64")
+
+else ()
+    message(FATAL_ERROR "CPU architecture not supported.")
+endif ()
+
+
+
+
+
+#choose mkl or openblas, if mkl present then use it, and it is depend on system too.
+
+
+
+
+
+
 
 
 
