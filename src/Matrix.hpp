@@ -4,7 +4,7 @@
 #include "cpu.h"
 #include <Eigen/Eigen>
 #include <iostream>
-#include <Logger.h>
+#include "Logger.h"
 
 static_assert(std::numeric_limits<double>::is_iec559, "Not a supported compiler");
 
