@@ -31,7 +31,7 @@
 #include <string>
 #include <chrono>
 #include <algorithm>
-#include "main/option.h"
+#include "option.h"
 #include "utils.hpp" 
 #include <omp.h>
 #include <cstdlib>
