@@ -36,6 +36,8 @@
 #include <omp.h>
 #include <cstdlib>
 #include "mem.hpp"
+#include "config.h"
+#include "stdio.h"
 
 #include "acat.hpp" //add by fanghl 20210303
 #define ACAT_MODULE
@@ -55,10 +57,16 @@ void out_ver(bool flag_outFile){
     }else{
         log = bind(&Logger::m, LOGGER_P, _1, _2, _3);
     }
-
     log(0, "*******************************************************************", "");
     log(0, "* Genome-wide Complex Trait Analysis (GCTA)", "");
-    log(0, "* version 1.94.0 beta " + getOSName(), "");
+    char version_info[128];
+    sprintf(version_info, "* Version: %s %s", GCTA_VERSION, getOSName().c_str());
+    log(0, std::string(version_info), "");
+#if defined __linux && __GNUC__
+    char compile_info[256];
+    sprintf(compile_info, "* Build at: %s %s, By GCC %d.%d", __DATE__, __TIME__,  __GNUC__, __GNUC_MINOR__);
+    log(0, std::string(compile_info), "");
+#endif
     log(0, "* (C) 2010-present, Jian Yang, The University of Queensland", "");
     log(0, "* Please report bugs to Jian Yang <jian.yang.qt@gmail.com>", "");
     log(0, "*******************************************************************", "");
