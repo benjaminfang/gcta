@@ -1160,7 +1160,7 @@ void Geno::getGenoDouble_bgen(uintptr_t *buf, int idx, GenoBufItem* gbuf){
             uint32_t Ldecomp = len_decomp;
             int z_result = uncompress((Bytef*)dec_data, (uLongf*)&Ldecomp, (Bytef*)curbuf, curCompSize);
             if(z_result != Z_OK || len_decomp != Ldecomp){
-                LOGGER.e(0, "decompressing genotype data error in " + error_promp); 
+                LOGGER.e(0, "M2, decompressing genotype data error in " + error_promp); 
             }
         }else if(compressFormat == 2){
             //zstd  
@@ -1179,7 +1179,7 @@ void Geno::getGenoDouble_bgen(uintptr_t *buf, int idx, GenoBufItem* gbuf){
             size_t const dSize = ZSTD_decompress((void *)dec_data, len_decomp, (void*)curbuf, curCompSize); 
 
             if(ZSTD_isError(dSize)){
-                LOGGER.e(0, "decompressing genotype error: " + string(ZSTD_getErrorName(dSize)) + " in " + error_promp);
+                LOGGER.e(0, "M3, decompressing genotype error: " + string(ZSTD_getErrorName(dSize)) + " in " + error_promp);
             }
         }else{
             LOGGER.e(0, "unknown compress format in " + error_promp);
@@ -1794,7 +1794,7 @@ void Geno::getGenoArray_bgen(const vector<uint32_t>& raw_marker_index, GenoBuf *
             if(curCompressFormat == 1){
                 int z_result = uncompress((Bytef*)cur_dec_data, (uLongf*)&len_decomp, (Bytef*)cur_snp_data, curCompSize);
                 if(z_result != Z_OK || len_decomp != decSizes[i]){
-                    LOGGER.e(0, "decompressing genotype data error in " + error_promp); 
+                    LOGGER.e(0, "M4, decompressing genotype data error in " + error_promp); 
                 }
             }else if(curCompressFormat == 2){
                 //zstd
@@ -1813,7 +1813,7 @@ void Geno::getGenoArray_bgen(const vector<uint32_t>& raw_marker_index, GenoBuf *
                 size_t const dSize = ZSTD_decompress((void *)cur_dec_data, len_decomp, (void*)cur_snp_data, curCompSize); 
 
                 if(ZSTD_isError(dSize)){
-                    LOGGER.e(0, "decompressing genotype error: " + string(ZSTD_getErrorName(dSize)) + " in " + error_promp);
+                    LOGGER.e(0, "M5, decompressing genotype error: " + string(ZSTD_getErrorName(dSize)) + " in " + error_promp);
                 }
             }else{
                 LOGGER.e(0, "unknown compress format in " + error_promp);
@@ -2811,7 +2811,14 @@ void Geno::bgen2bed(const vector<uint32_t> &raw_marker_index){
         int z_result = uncompress((Bytef*)dec_data, &dec_size, (Bytef*)snp_data, len_comp);
         delete[] snp_data;
         if(z_result == Z_MEM_ERROR || z_result == Z_BUF_ERROR || dec_size != len_decomp){
-            LOGGER.e(0, "decompressing genotype data error in " + to_string(raw_index) + "th SNP."); 
+            LOGGER.e(0, "M1, decompressing genotype data error in " + to_string(raw_index) + "th SNP."); 
+            if (z_result == Z_MEM_ERROR) {
+                printf("M1, Z_MEM_ERROR\n");
+            } else if (z_result == Z_BUF_ERROR) {
+                printf("M1, Z_BUF_ERROR\n");
+            } else if (dec_size != len_decomp) {
+                printf("M1, dec_size != len_decomp\n");
+            }
         }
 
         uint32_t n_sample = *(uint32_t *)dec_data;
