@@ -68,7 +68,7 @@ void out_ver(bool flag_outFile){
     compile_info = outstring.str();
     log(0, compile_info, "");
 #endif
-    log(0, "* (C) 2010-present, Yang Lab, Westlake University", "");
+    log(0, "* (C) 2010-present", "");
     log(0, "* Please report bugs to Jian Yang <jian.yang@westlake.edu.cn>", "");
     log(0, "*******************************************************************", "");
     log(0, string("at ") + getLocalTime() + ".", "Analysis started");
